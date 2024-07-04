@@ -1,19 +1,19 @@
 version: "3"
 services:
-  alice-agent:
+  central-party-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
-    container_name: alice-agent
+    container_name: central-party-agent
     environment:
       ACAPY_ADMIN_INSECURE_MODE: "true"
       ACAPY_AUTO_PROVISION: "true"
       ACAPY_DEBUG_CONNECTIONS: "true"
-      ACAPY_ENDPOINT: "http://alice-agent:8000"
-      ACAPY_LABEL: "Alice Agent"
+      ACAPY_ENDPOINT: "http://central-party-agent:8000"
+      ACAPY_LABEL: "Central Party Agent"
       ACAPY_LOG_LEVEL: "info"
       ACAPY_NO_LEDGER: "true"
       ADMIN_PORT: "8001"
       AGENT_PORT: "8000"
-      WEBHOOK_URL: "http://alice-webhook:5000"
+      WEBHOOK_URL: "http://central-party-webhook:5000"
     entrypoint: /bin/bash
     command: ["-c",
         "aca-py start \
@@ -24,35 +24,35 @@ services:
         --auto-accept-requests \
         --auto-ping-connection \
         --admin-insecure-mode \
-        --webhook-url 'http://alice-webhook:5000'"
+        --webhook-url 'http://central-party-webhook:5000'"
     ]
     ports:
       - "8001:8001"
   
-  alice-webhook:
+  central-party-webhook:
     image: python:3.8-slim
-    container_name: alice-webhook
+    container_name: central-party-webhook
     volumes:
-      - ./webhooks/alice/webhook.py:/app/webhook.py
+      - ./src:/app
     working_dir: /app
-    command: ["sh", "-c", "pip install flask && python webhook.py"]
+    command: ["sh", "-c", "pip install flask && python central-party.py"]
     ports:
       - "5000:5000"
 
-  bob-agent:
+  fl-client-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
-    container_name: bob-agent
+    container_name: fl-client-agent
     environment:
       ACAPY_ADMIN_INSECURE_MODE: "true"
       ACAPY_AUTO_PROVISION: "true"
       ACAPY_DEBUG_CONNECTIONS: "true"
-      ACAPY_ENDPOINT: "http://bob-agent:8100"
-      ACAPY_LABEL: "Bob Agent"
+      ACAPY_ENDPOINT: "http://fl-client-agent:8100"
+      ACAPY_LABEL: "FL Client Agent"
       ACAPY_LOG_LEVEL: "info"
       ACAPY_NO_LEDGER: "true"
       ADMIN_PORT: "8101"
       AGENT_PORT: "8100"
-      WEBHOOK_URL: "http://bob-webhook:5000"
+      WEBHOOK_URL: "http://fl-client-webhook:5000"
     entrypoint: /bin/bash
     command: ["-c",
         "aca-py start \
@@ -63,17 +63,17 @@ services:
         --auto-accept-requests \
         --auto-ping-connection \
         --admin-insecure-mode \
-        --webhook-url 'http://bob-webhook:5000'"
+        --webhook-url 'http://fl-client-webhook:5000'"
     ]
     ports:
       - "8101:8101"
   
-  bob-webhook:
+  fl-client-webhook:
     image: python:3.8-slim
-    container_name: bob-webhook
+    container_name: fl-client-webhook
     volumes:
-      - ./webhooks/bob/webhook.py:/app/webhook.py
+      - ./src:/app
     working_dir: /app
-    command: ["sh", "-c", "pip install flask && python webhook.py"]
+    command: ["sh", "-c", "pip install flask && python fl-client.py"]
     ports:
       - "5001:5000"

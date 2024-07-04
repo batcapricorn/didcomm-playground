@@ -8,6 +8,11 @@ didcomm = "*"
 peerdid = "*"
 jupyter = "*"
 flask = "*"
+xgboost = "*"
+pandas = "*"
+numpy = "*"
+scikit-learn = "*"
+black = {extras = ["jupyter"], version = "*"}
 
 [dev-packages]
 
