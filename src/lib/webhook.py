@@ -1,20 +1,22 @@
 from flask import Flask, request
-import logging
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
-app = Flask(__name__)
+from .logger import logger
 
 
-@app.route("/topic/<path:subpath>", methods=["POST"])
-def handle_all_requests(subpath):
-    data = request.json
-    logging.info(f"Webhook received POST request for subpath: {subpath}, data: {data}")
-    return "", 200
+def create_app(custom_handler):
+    app = Flask(__name__)
+
+    @app.route("/topic/<path:subpath>", methods=["POST"])
+    def handle_all_requests(subpath):
+        data = request.json
+        logger.info(
+            f"Webhook received POST request for subpath: {subpath}, data: {data}"
+        )
+        custom_handler(subpath, data)
+        return "", 200
+
+    return app
 
 
-def run_webhook_server(port):
+def run_webhook_server(port, custom_handler):
+    app = create_app(custom_handler)
     app.run(host="0.0.0.0", port=port)

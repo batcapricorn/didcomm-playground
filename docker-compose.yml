@@ -34,8 +34,9 @@ services:
     container_name: central-party-webhook
     volumes:
       - ./src:/app
+      - ./data:/data
     working_dir: /app
-    command: ["sh", "-c", "pip install flask && python central-party.py"]
+    command: ["sh", "-c", "pip install -r requirements.txt && python central-party.py"]
     ports:
       - "5000:5000"
 
@@ -73,7 +74,8 @@ services:
     container_name: fl-client-webhook
     volumes:
       - ./src:/app
+      - ./data:/data
     working_dir: /app
-    command: ["sh", "-c", "pip install flask && python fl-client.py"]
+    command: ["sh", "-c", "pip install -r requirements.txt && python fl-client.py"]
     ports:
       - "5001:5000"
