@@ -2,7 +2,7 @@ import logging
 import logging.config
 
 
-def setup_logging(config_file=None):
+def setup_logging():
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(message)s",

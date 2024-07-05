@@ -1,14 +1,13 @@
-import binascii
 import os
 import json
 
 import pandas as pd
-import xgboost as xgb
+from sklearn.linear_model import LogisticRegression
 
 from .logger import logger
 
 
-TEST_DATA_FILE = "/data/titanic_train.csv"  # os.getenv("DATA_DIR")
+TEST_DATA_FILE = os.getenv("TEST_DATA_FILE", "/data/titanic_train.csv")
 
 
 def perfom_training_iteration():
@@ -17,17 +16,15 @@ def perfom_training_iteration():
     X = df.drop("Survived", axis=1)
     y = df["Survived"]
 
-    dtrain = xgb.DMatrix(X, label=y)
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X, y)
 
-    # Define parameters
-    params = {"objective": "binary:logistic", "eval_metric": "logloss", "eta": 0.1}
+    coef = model.coef_.tolist()
+    intercept = model.intercept_.tolist()
 
-    # Train the model
-    model = xgb.train(params, dtrain, num_boost_round=100)
-    model_json = model.get_dump(dump_format="json")
+    data = {"coef": coef, "intercept": intercept}
+    json_str = json.dumps(data)
+    json_bytes = json_str.encode("utf-8")
+    hex_str = json_bytes.hex()
 
-    # Convert JSON to hex string
-    json_str = json.dumps(model_json)  # Convert JSON object to string
-    hex_str = binascii.hexlify(json_str.encode()).decode()
-    logger.info("Model successfuly trained")
-    logger.info(str(hex_str)[:20] + "...")
+    logger.info("Model successfuly trained. Hex String: %s...", str(hex_str)[:20])
