@@ -1,15 +1,20 @@
+import logging
+import os
 from flask import Flask, request
 from flask.logging import default_handler
+
 
 def create_app(custom_handler):
     app = Flask(__name__)
     app.logger.removeHandler(default_handler)
 
-    @app.route("/topic/<path:subpath>", methods=["POST"])
+    @app.route("/topic/<path:subpath>/", methods=["POST"])
     def handle_all_requests(subpath):
         data = request.json
+        full_url = request.url
+        process_id = os.getpid()
         app.logger.info(
-            f"Webhook received POST request for subpath: {subpath}, data: {data}"
+            f"Webhook received POST request for subpath: {subpath}, data: {data}, full URL: {full_url}, PID: {process_id}"
         )
         custom_handler(subpath, data)
         return "", 200

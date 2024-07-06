@@ -1,2 +1,3 @@
 *.log
+model/*.json
 __pycache__/

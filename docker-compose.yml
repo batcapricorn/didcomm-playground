@@ -13,7 +13,6 @@ services:
       ACAPY_NO_LEDGER: "true"
       ADMIN_PORT: "8001"
       AGENT_PORT: "8000"
-      WEBHOOK_URL: "http://central-party-webhook:5000"
     entrypoint: /bin/bash
     command: ["-c",
         "aca-py start \
@@ -31,10 +30,13 @@ services:
   
   central-party-webhook:
     build:
-      dockerfile: ./dockerfiles/Dockerfile.central_party_webhook
+      dockerfile: ./dockerfiles/Dockerfile.webhook
+      args:
+        AGENT_TYPE: CENTRAL
     container_name: central-party-webhook
     volumes:
       - ./data:/data
+      - ./model:/model
     ports:
       - "5000:5000"
 
@@ -51,7 +53,6 @@ services:
       ACAPY_NO_LEDGER: "true"
       ADMIN_PORT: "8101"
       AGENT_PORT: "8100"
-      WEBHOOK_URL: "http://fl-client-webhook:5000"
     entrypoint: /bin/bash
     command: ["-c",
         "aca-py start \
@@ -69,7 +70,9 @@ services:
   
   fl-client-webhook:
     build:
-      dockerfile: ./dockerfiles/Dockerfile.fl_client_webhook
+      dockerfile: ./dockerfiles/Dockerfile.webhook
+      args:
+          AGENT_TYPE: CLIENT
     container_name: fl-client-webhook
     volumes:
       - ./data:/data

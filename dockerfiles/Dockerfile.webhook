@@ -1,0 +1,20 @@
+FROM python:3.8-slim
+
+#AGENT_TYPE either CLIENT or CENTRAL
+ARG AGENT_TYPE
+ENV AGENT_TYPE=$AGENT_TYPE
+
+RUN if [ "$AGENT_TYPE" != "CLIENT" ] && [ "$AGENT_TYPE" != "CENTRAL" ]; then \
+      echo "Error: AGENT_TYPE must be either CLIENT or CENTRAL"; \
+      exit 1; \
+    fi
+
+EXPOSE 5000
+
+WORKDIR /app
+
+COPY ./src /app
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "main.py"]
