@@ -1,14 +1,14 @@
 from flask import Flask, request
-from .logger import logger
-
+from flask.logging import default_handler
 
 def create_app(custom_handler):
     app = Flask(__name__)
+    app.logger.removeHandler(default_handler)
 
     @app.route("/topic/<path:subpath>", methods=["POST"])
     def handle_all_requests(subpath):
         data = request.json
-        logger.info(
+        app.logger.info(
             f"Webhook received POST request for subpath: {subpath}, data: {data}"
         )
         custom_handler(subpath, data)

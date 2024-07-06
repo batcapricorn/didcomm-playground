@@ -30,13 +30,11 @@ services:
       - "8001:8001"
   
   central-party-webhook:
-    image: python:3.8-slim
+    build:
+      dockerfile: ./dockerfiles/Dockerfile.central_party_webhook
     container_name: central-party-webhook
     volumes:
-      - ./src:/app
       - ./data:/data
-    working_dir: /app
-    command: ["sh", "-c", "pip install -r requirements.txt && python central-party.py"]
     ports:
       - "5000:5000"
 
@@ -70,12 +68,10 @@ services:
       - "8101:8101"
   
   fl-client-webhook:
-    image: python:3.8-slim
+    build:
+      dockerfile: ./dockerfiles/Dockerfile.fl_client_webhook
     container_name: fl-client-webhook
     volumes:
-      - ./src:/app
       - ./data:/data
-    working_dir: /app
-    command: ["sh", "-c", "pip install -r requirements.txt && python fl-client.py"]
     ports:
       - "5001:5000"
