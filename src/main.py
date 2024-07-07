@@ -14,4 +14,7 @@ if __name__ == "__main__":
     if AGENT_TYPE == "CLIENT":
         run_webhook_server(5000, fl_client_handler)
     elif AGENT_TYPE == "CENTRAL":
+        model_file = "/model/params.json"
+        if os.path.isfile(model_file):
+            os.remove(model_file)
         run_webhook_server(5000, central_party_handler)
