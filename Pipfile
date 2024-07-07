@@ -15,6 +15,7 @@ scikit-learn = "*"
 black = {extras = ["jupyter"], version = "*"}
 matplotlib = "*"
 pylint = "*"
+setuptools = "*"
 
 [dev-packages]
 
