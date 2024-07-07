@@ -4,14 +4,14 @@
 import json
 import os
 
+from .env import MODEL_FILE
 from .validate import hex_to_dict
 
 
 def perform_model_aggregation(data):
     old_model_params = None
-    model_file = "/model/params.json"
-    if os.path.isfile(model_file):
-        with open(model_file, "r") as file:
+    if os.path.isfile(MODEL_FILE):
+        with open(MODEL_FILE, "r") as file:
             old_model_params = json.load(file)
 
     updated_model_params = hex_to_dict(data["content"])
@@ -23,7 +23,7 @@ def perform_model_aggregation(data):
             old_model_params, updated_model_params
         )
 
-    with open(model_file, "w") as file:
+    with open(MODEL_FILE, "w") as file:
         json.dump(updated_model_params, file, indent=4)
 
 

@@ -8,13 +8,10 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
 from .api import send_message
+from .env import DATA_FILE, FL_CLIENT_ADMIN_URL
 from .validate import hex_to_dict
 
 logger = logging.getLogger(__name__)
-
-
-DATA_FILE = os.getenv("DATA_FILE", "/data/titanic_train.csv")
-FL_CLIENT_ADMIN_URL = os.getenv("FL_CLIENT_ADMIN_URL", "http://fl-client-agent:8101")
 
 
 def perfom_training_iteration(data):
