@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+setuptools = "*"
 didcomm = "*"
 peerdid = "*"
 jupyter = "*"
@@ -15,7 +16,6 @@ scikit-learn = "*"
 black = {extras = ["jupyter"], version = "*"}
 matplotlib = "*"
 pylint = "*"
-setuptools = "*"
 
 [dev-packages]
 
