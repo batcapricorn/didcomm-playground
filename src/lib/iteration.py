@@ -4,6 +4,7 @@ using local data
 
 import json
 import logging
+import os
 import uuid
 
 import numpy as np
@@ -11,13 +12,18 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
 from .api import send_message
-from .env import DATA_FILE, FL_CLIENT_ADMIN_URL
+from .env import (
+    DATA_FILE,
+    TMP_DATA_FILE,
+    LOCAL_TRAINING_SAMPLE_SIZE,
+    FL_CLIENT_ADMIN_URL,
+)
 from .validate import hex_to_dict
 
 logger = logging.getLogger(__name__)
 
 
-def perfom_training_iteration(data):
+def perform_training_iteration(data):
     """
     Perform a training iteration using federated learning.
 
@@ -51,16 +57,31 @@ def perfom_training_iteration(data):
 
 def get_data(seed=123):
     """
-    Retrieve data for training from a CSV file.
+    Retrieve data for training from a primary CSV file or a temporary CSV file.
+    The temporary CSV file is used to ensure that every data point is utilized
+    at least once during training. By adjusting the number of iterations and
+    the sample size (as configured in `env.py`), it is possible to
+    guarantee that every data point is used exactly once.
 
     :param seed: Seed value for random sampling of data.
     :type seed: int
     :return: Features (X) and labels (y) for training.
     :rtype: tuple
     """
-    df = pd.read_csv(DATA_FILE).sample(n=20, random_state=seed)
-    X_train = df.drop("Survived", axis=1)
-    y_train = df["Survived"]
+    if os.path.isfile(TMP_DATA_FILE):
+        df = pd.read_csv(TMP_DATA_FILE)
+        if df.shape[0] == 0:
+            df = pd.read_csv(DATA_FILE)
+    else:
+        df = pd.read_csv(DATA_FILE)
+    sample_df = df.sample(
+        n=min(LOCAL_TRAINING_SAMPLE_SIZE, df.shape[0]), random_state=seed
+    )
+    remaining_df = df.drop(sample_df.index)
+    sample_df.to_csv(TMP_DATA_FILE, index=False)
+    remaining_df.to_csv(TMP_DATA_FILE, index=False)
+    X_train = sample_df.drop("Survived", axis=1)
+    y_train = sample_df["Survived"]
     return X_train, y_train
 
 
@@ -70,10 +91,10 @@ def get_model(model_params, X_train, y_train):
 
     :param model_params: Parameters for configuring the logistic regression model.
     :type model_params: dict
-    :param X: Features for training the model.
-    :type X: pandas.DataFrame
-    :param y: Labels for training the model.
-    :type y: pandas.Series
+    :param X_train: Features for training the model.
+    :type X_train: pandas.DataFrame
+    :param y_train: Labels for training the model.
+    :type y_train: pandas.Series
     :return: Configured logistic regression model.
     :rtype: sklearn.linear_model.LogisticRegression
     """

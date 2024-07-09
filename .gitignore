@@ -1,3 +1,4 @@
 *.log
 model/*.json
+data/tmp.csv
 __pycache__/

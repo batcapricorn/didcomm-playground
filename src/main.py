@@ -5,7 +5,7 @@ a ACA-Py agent
 import logging
 import os
 
-from lib.env import AGENT_TYPE, MODEL_FILE
+from lib.env import AGENT_TYPE, MODEL_FILE, TMP_DATA_FILE
 from lib.handlers import central_party_handler, fl_client_handler
 from lib.webhook import run_webhook_server
 
@@ -14,6 +14,10 @@ if __name__ == "__main__":
         level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
+
+    if os.path.isfile(TMP_DATA_FILE):
+        os.remove(TMP_DATA_FILE)
+
     if AGENT_TYPE == "CLIENT":
         run_webhook_server(5000, fl_client_handler)
     elif AGENT_TYPE == "CENTRAL":

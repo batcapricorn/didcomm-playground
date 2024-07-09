@@ -2,9 +2,9 @@
 sent by ACA-Py agents
 """
 
-from lib.aggregation import perform_model_aggregation
-from lib.iteration import perfom_training_iteration
-from lib.validate import is_fl_message
+from .aggregation import perform_model_aggregation
+from .iteration import perform_training_iteration
+from .validate import is_fl_message
 
 
 def central_party_handler(subpath, data):
@@ -36,4 +36,4 @@ def fl_client_handler(subpath, data):
     :type data: dict
     """
     if is_fl_message(subpath, data):
-        perfom_training_iteration(data)
+        perform_training_iteration(data)
